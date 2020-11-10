@@ -37,6 +37,6 @@
   }
 }
 
-.App nav a {
+.App nav > * {
  padding: 5px;
 }

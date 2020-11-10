@@ -1,6 +1,6 @@
-import { useState } from "react";
 import { Link, useRouteMatch } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
+import useQuery from "../hooks/useQuery";
 
 const ENDPOINT = "https://pokeapi.co/api/v2";
 const LIMIT = 20;
@@ -11,7 +11,8 @@ function makeUrl(page) {
 
 function PokemonList() {
   const { url } = useRouteMatch();
-  const [page, setPage] = useState(1);
+  const query = useQuery();
+  const page = parseInt(query.get("page") ?? 1, 10);
   const [result, loading, error] = useFetch(makeUrl(page));
 
   if (error) {
@@ -23,18 +24,18 @@ function PokemonList() {
       <h1>Liste des Pokémon</h1>
       {result ? (
         <div>
-          <button
-            onClick={() => setPage((page) => page - 1)}
-            disabled={!result.previous}
-          >
-            Précédent
-          </button>
-          <button
-            onClick={() => setPage((page) => page + 1)}
-            disabled={!result.next}
-          >
-            Suivant
-          </button>
+          <nav>
+            {result.previous ? (
+              <Link to={`${url}?page=${page - 1}`}>Précédent</Link>
+            ) : (
+              <span>Précédent</span>
+            )}
+            {result.next ? (
+              <Link to={`${url}?page=${page + 1}`}>Suivant</Link>
+            ) : (
+              <span>Suivant</span>
+            )}
+          </nav>
           <ul>
             {result.results.map((pokemon) => (
               <li key={pokemon.name}>
