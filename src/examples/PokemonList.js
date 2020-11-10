@@ -1,37 +1,47 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import useFetch from "./useFetch";
 
-function ApiConsumer() {
-    const [result, setResult] = useState(undefined);
-    const [error, setError] = useState(null);
-    const [loading, setLoading] = useState(false);
+const ENDPOINT = "https://pokeapi.co/api/v2/pokemon";
+const LIMIT = 20;
 
-    useEffect(() => {
-        setLoading(true);
-
-        fetch('https://pokeapi.co/api/v2/pokemon')
-        .then(response => response.json())
-        .then(
-            result => {
-            setLoading(false);
-            setResult(result);
-            setError(null);
-            },
-            error => {
-            setLoading(false);
-            setError(error);
-            },
-        );
-    }, []);
-
-    if (error) {
-        return <div>Error: {error.message}</div>;
-    } else if (loading) {
-        return <div>Loading...</div>;
-    } else if (result) {
-        return <ul>{JSON.stringify(result)}</ul>;
-    } else {
-        return null;
-    }
+function makeUrl(page) {
+  return `${ENDPOINT}?offset=${(page - 1) * LIMIT}&limit=${LIMIT}`;
 }
 
-export default ApiConsumer
+function PokemonList() {
+  const [page, setPage] = useState(1);
+  const [result, loading, error] = useFetch(makeUrl(page));
+
+  if (error) {
+    return <p>Error: {error.message}</p>;
+  }
+
+  return (
+    <>
+      {result ? (
+        <div>
+          <button
+            onClick={() => setPage((page) => page - 1)}
+            disabled={!result.previous}
+          >
+            Précédent
+          </button>
+          <button
+            onClick={() => setPage((page) => page + 1)}
+            disabled={!result.next}
+          >
+            Suivant
+          </button>
+          <ul>
+            {result.results.map((pokemon) => (
+              <li key={pokemon.name}>{pokemon.name}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {loading ? <p>Loading...</p> : null}
+    </>
+  );
+}
+
+export default PokemonList;
