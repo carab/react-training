@@ -2,7 +2,7 @@ import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 import "./App.css";
 import ErrorNotFound from "./components/ErrorNotFound";
 import Home from "./components/Home";
-import PokemonList from "./components/PokemonList";
+import PokemonIndex from "./components/PokemonIndex";
 
 function App() {
   return (
@@ -17,7 +17,7 @@ function App() {
             <Home />
           </Route>
           <Route path="/pokemon">
-            <PokemonList />
+            <PokemonIndex />
           </Route>
           <Route>
             <ErrorNotFound />
