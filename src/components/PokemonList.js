@@ -1,5 +1,5 @@
 import { useState } from "react";
-import useFetch from "./useFetch";
+import useFetch from "../hooks/useFetch";
 
 const ENDPOINT = "https://pokeapi.co/api/v2/pokemon";
 const LIMIT = 20;
@@ -18,6 +18,7 @@ function PokemonList() {
 
   return (
     <>
+      <h1>Liste des Pokémon</h1>
       {result ? (
         <div>
           <button
