@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link, useRouteMatch } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 import useQuery from "../hooks/useQuery";
-import { pokemonListSet, selectPokemonList } from "./pokemonListSlice";
+import { pokemonListSet, pokemonListTogglePick, selectPokemonList, selectPokemonListPicked } from "./pokemonListSlice";
 
 const ENDPOINT = "https://pokeapi.co/api/v2";
 const LIMIT = 20;
@@ -15,6 +15,7 @@ function makeUrl(page) {
 function PokemonList() {
   const dispatch = useDispatch();
   const { result, error, loading } = useSelector(selectPokemonList);
+  const pickedPokemons = useSelector(selectPokemonListPicked);
   const { url } = useRouteMatch();
   const query = useQuery();
   const page = parseInt(query.get("page") ?? 1, 10);
@@ -25,6 +26,14 @@ function PokemonList() {
       pokemonListSet(fetchState.result, fetchState.loading, fetchState.error)
     );
   }, [dispatch, fetchState.result, fetchState.loading, fetchState.error]);
+
+  function isPicked(name) {
+    return pickedPokemons.includes(name)
+  }
+
+  function handleTogglePick(name) {
+    return () => dispatch(pokemonListTogglePick(name))
+  }
 
   if (error) {
     return <p>Error: {error.message}</p>;
@@ -51,6 +60,7 @@ function PokemonList() {
             {result.results.map((pokemon) => (
               <li key={pokemon.name}>
                 <Link to={`${url}/${pokemon.name}`}>{pokemon.name}</Link>
+                <input type="checkbox" checked={isPicked(pokemon.name)} onChange={handleTogglePick(pokemon.name)}/>
               </li>
             ))}
           </ul>

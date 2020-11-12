@@ -1,10 +1,14 @@
+import { useSelector } from "react-redux";
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 import "./App.css";
 import ErrorNotFound from "./components/ErrorNotFound";
 import Home from "./components/Home";
 import PokemonIndex from "./components/PokemonIndex";
+import { selectPokemonListPicked } from "./features/pokemonListSlice";
 
 function App() {
+  const pickedPokemons = useSelector(selectPokemonListPicked);
+
   return (
     <BrowserRouter>
       <div className="App">
@@ -20,6 +24,7 @@ function App() {
             {({ match }) => (
               <Link to="/pokemon" aria-current={match ? "page" : undefined}>
                 Pokémon
+                {pickedPokemons.length ? `(${pickedPokemons.length})` : null}
               </Link>
             )}
           </Route>
