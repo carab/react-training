@@ -9,8 +9,20 @@ function App() {
     <BrowserRouter>
       <div className="App">
         <nav>
-          <Link to="/">Home</Link>
-          <Link to="/pokemon">Pokémon</Link>
+          <Route exact path="/">
+            {({ match }) => (
+              <Link to="/" aria-current={match ? "page" : undefined}>
+                Home
+              </Link>
+            )}
+          </Route>
+          <Route path="/pokemon">
+            {({ match }) => (
+              <Link to="/pokemon" aria-current={match ? "page" : undefined}>
+                Pokémon
+              </Link>
+            )}
+          </Route>
         </nav>
         <Switch>
           <Route exact path="/">

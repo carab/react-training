@@ -40,3 +40,7 @@
 .App nav > * {
  padding: 5px;
 }
+
+.App nav > *[aria-current="page"] {
+  font-weight: bold;
+}
