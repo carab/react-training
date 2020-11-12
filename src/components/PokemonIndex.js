@@ -1,6 +1,6 @@
 import { Route, Switch, useRouteMatch } from "react-router-dom";
 import PokemonDetail from "./PokemonDetail";
-import PokemonList from "./PokemonList";
+import PokemonList from "../features/PokemonList";
 
 function PokemonIndex() {
   const { path } = useRouteMatch();

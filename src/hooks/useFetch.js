@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 function useFetch(url) {
   const [result, setResult] = useState(undefined);
@@ -32,13 +32,15 @@ function useFetch(url) {
     };
   }, [url]);
 
-  const _return = [result, loading, error];
+  return useMemo(() => {
+    const _return = [result, loading, error];
 
-  _return.result = result;
-  _return.loading = loading;
-  _return.error = error;
+    _return.result = result;
+    _return.loading = loading;
+    _return.error = error;
 
-  return _return;
+    return _return;
+  }, [result, loading, error]);
 }
 
 export default useFetch;
