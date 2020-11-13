@@ -1,15 +1,19 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { Provider } from "react-redux";
+import { combineReducers, configureStore } from "@reduxjs/toolkit";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
 import { pokemonListReducer } from "../features/pokemonListSlice";
 
-const appReducer = {
-  pokemonList: pokemonListReducer,
+const persistConfig = {
+  key: "app",
+  storage,
 };
 
-export const store = configureStore({ reducer: appReducer });
+const appReducer = combineReducers({
+  pokemonList: pokemonListReducer,
+});
 
-function StoreProvider({ children }) {
-  return <Provider store={store}>{children}</Provider>;
-}
+const persistedReducer = persistReducer(persistConfig, appReducer);
 
-export default StoreProvider;
+export const store = configureStore({ reducer: persistedReducer });
+
+export const persistor = persistStore(store);
