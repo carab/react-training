@@ -1,16 +1,46 @@
-export function pokemonListSet(result, loading, error) {
-  return {
-    type: "pokemon_list/set",
-    result,
-    loading,
-    error,
-  };
-}
+import { getPokemonList } from "../service/pokemonApi";
 
 export function pokemonListTogglePick(name) {
   return {
     type: "pokemon_list/toggle_pick",
     name,
+  };
+}
+
+export function pokemonListRequest(page) {
+  return {
+    type: "pokemon_list/request",
+    page,
+  };
+}
+
+export function pokemonListReceive(result) {
+  return {
+    type: "pokemon_list/receive",
+    result,
+  };
+}
+
+export function pokemonListError(error) {
+  return {
+    type: "pokemon_list/error",
+    error,
+  };
+}
+
+export function pokemonListFetch(page) {
+  return async (dispatch, getState) => {
+    dispatch(pokemonListRequest(page));
+
+    try {
+      const result = await getPokemonList(page);
+
+      dispatch(pokemonListReceive(result));
+    } catch (error) {
+      if (error.name !== "AbortError") {
+        dispatch(pokemonListError(error));
+      }
+    }
   };
 }
 
@@ -23,11 +53,22 @@ const initialState = {
 
 export function pokemonListReducer(state = initialState, action) {
   switch (action.type) {
-    case "pokemon_list/set":
+    case "pokemon_list/request":
+      return {
+        ...state,
+        loading: true,
+        error: null,
+      };
+    case "pokemon_list/receive":
       return {
         ...state,
         result: action.result,
-        loading: action.loading,
+        loading: false,
+      };
+    case "pokemon_list/error":
+      return {
+        ...state,
+        loading: false,
         error: action.error,
       };
     case "pokemon_list/toggle_pick":

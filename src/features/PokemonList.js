@@ -1,16 +1,13 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useRouteMatch } from "react-router-dom";
-import useFetch from "../hooks/useFetch";
 import useQuery from "../hooks/useQuery";
-import { pokemonListSet, pokemonListTogglePick, selectPokemonList, selectPokemonListPicked } from "./pokemonListSlice";
-
-const ENDPOINT = "https://pokeapi.co/api/v2";
-const LIMIT = 20;
-
-function makeUrl(page) {
-  return `${ENDPOINT}/pokemon?offset=${(page - 1) * LIMIT}&limit=${LIMIT}`;
-}
+import {
+  pokemonListFetch,
+  pokemonListTogglePick,
+  selectPokemonList,
+  selectPokemonListPicked,
+} from "./pokemonListSlice";
 
 function PokemonList() {
   const dispatch = useDispatch();
@@ -19,20 +16,17 @@ function PokemonList() {
   const { url } = useRouteMatch();
   const query = useQuery();
   const page = parseInt(query.get("page") ?? 1, 10);
-  const fetchState = useFetch(makeUrl(page));
 
   useEffect(() => {
-    dispatch(
-      pokemonListSet(fetchState.result, fetchState.loading, fetchState.error)
-    );
-  }, [dispatch, fetchState.result, fetchState.loading, fetchState.error]);
+    dispatch(pokemonListFetch(page));
+  }, [dispatch, page]);
 
   function isPicked(name) {
-    return pickedPokemons.includes(name)
+    return pickedPokemons.includes(name);
   }
 
   function handleTogglePick(name) {
-    return () => dispatch(pokemonListTogglePick(name))
+    return () => dispatch(pokemonListTogglePick(name));
   }
 
   if (error) {
@@ -60,7 +54,11 @@ function PokemonList() {
             {result.results.map((pokemon) => (
               <li key={pokemon.name}>
                 <Link to={`${url}/${pokemon.name}`}>{pokemon.name}</Link>
-                <input type="checkbox" checked={isPicked(pokemon.name)} onChange={handleTogglePick(pokemon.name)}/>
+                <input
+                  type="checkbox"
+                  checked={isPicked(pokemon.name)}
+                  onChange={handleTogglePick(pokemon.name)}
+                />
               </li>
             ))}
           </ul>
