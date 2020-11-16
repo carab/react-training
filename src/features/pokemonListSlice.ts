@@ -1,35 +1,39 @@
-import { getPokemonList } from "../service/pokemonApi";
+import {
+  getPokemonList,
+  PokemonItemModel,
+  PokemonListModel,
+} from "../service/pokemonApi";
 
-export function pokemonListTogglePick(name) {
+export function pokemonListTogglePick(name: string) {
   return {
     type: "pokemon_list/toggle_pick",
     name,
   };
 }
 
-export function pokemonListRequest(page) {
+export function pokemonListRequest(page: number) {
   return {
     type: "pokemon_list/request",
     page,
   };
 }
 
-export function pokemonListReceive(result) {
+export function pokemonListReceive(result: PokemonListModel) {
   return {
     type: "pokemon_list/receive",
     result,
   };
 }
 
-export function pokemonListError(error) {
+export function pokemonListError(error: Error) {
   return {
     type: "pokemon_list/error",
     error,
   };
 }
 
-export function pokemonListFetch(page) {
-  return async (dispatch, getState) => {
+export function pokemonListFetch(page: number) {
+  return async (dispatch: any) => {
     dispatch(pokemonListRequest(page));
 
     try {
@@ -44,14 +48,24 @@ export function pokemonListFetch(page) {
   };
 }
 
-const initialState = {
+export type PokemonListState = {
+  result: PokemonListModel | undefined;
+  loading: boolean;
+  error: Error | null;
+  picked: PokemonItemModel["name"][];
+};
+
+const initialState: PokemonListState = {
   result: undefined,
   loading: false,
   error: null,
   picked: [],
 };
 
-export function pokemonListReducer(state = initialState, action) {
+export function pokemonListReducer(
+  state = initialState,
+  action: any
+) {
   switch (action.type) {
     case "pokemon_list/request":
       return {
@@ -90,10 +104,14 @@ export function pokemonListReducer(state = initialState, action) {
   }
 }
 
-export function selectPokemonList(state) {
+type AppStore = {
+  pokemonList: PokemonListState;
+};
+
+export function selectPokemonList(state: AppStore) {
   return state.pokemonList;
 }
 
-export function selectPokemonListPicked(state) {
+export function selectPokemonListPicked(state: AppStore) {
   return state.pokemonList.picked;
 }

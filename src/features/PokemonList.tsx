@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useRouteMatch } from "react-router-dom";
 import useQuery from "../hooks/useQuery";
@@ -16,17 +16,17 @@ function PokemonList() {
   const pickedPokemons = useSelector(selectPokemonListPicked);
   const { url } = useRouteMatch();
   const query = useQuery();
-  const page = parseInt(query.get("page") ?? 1, 10);
+  const page = parseInt(query.get("page") ?? "1", 10);
 
   useEffect(() => {
     dispatch(pokemonListFetch(page));
   }, [dispatch, page]);
 
-  function isPicked(name) {
+  function isPicked(name: string) {
     return pickedPokemons.includes(name);
   }
 
-  function handleTogglePick(name) {
+  function handleTogglePick(name: string) {
     return () => dispatch(pokemonListTogglePick(name));
   }
 
@@ -52,7 +52,7 @@ function PokemonList() {
             )}
           </nav>
           <ul>
-            {result.results.map((pokemon) => (
+            {result.results.map(pokemon => (
               <PokemonItem
                 key={pokemon.name}
                 pokemon={pokemon}
