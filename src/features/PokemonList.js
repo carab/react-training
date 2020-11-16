@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useRouteMatch } from "react-router-dom";
 import useQuery from "../hooks/useQuery";
+import PokemonItem from "./PokemonItem";
 import {
   pokemonListFetch,
   pokemonListTogglePick,
@@ -52,14 +53,13 @@ function PokemonList() {
           </nav>
           <ul>
             {result.results.map((pokemon) => (
-              <li key={pokemon.name}>
-                <Link to={`${url}/${pokemon.name}`}>{pokemon.name}</Link>
-                <input
-                  type="checkbox"
-                  checked={isPicked(pokemon.name)}
-                  onChange={handleTogglePick(pokemon.name)}
-                />
-              </li>
+              <PokemonItem
+                key={pokemon.name}
+                pokemon={pokemon}
+                baseUrl={url}
+                picked={isPicked(pokemon.name)}
+                onTogglePick={handleTogglePick(pokemon.name)}
+              />
             ))}
           </ul>
         </div>
