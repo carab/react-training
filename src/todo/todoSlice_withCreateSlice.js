@@ -1,31 +1,4 @@
-import produce from "immer";
-
-export function addTodo(text) {
-  return {
-    type: "todo/add",
-    payload: {
-      text,
-    },
-  };
-}
-
-export function toggleTodo(id) {
-  return {
-    type: "todo/toggle",
-    payload: {
-      id,
-    },
-  };
-}
-
-export function setFilter(filter) {
-  return {
-    type: "todo/filter/set",
-    payload: {
-      filter,
-    },
-  };
-}
+import { createSlice } from "@reduxjs/toolkit";
 
 export const initialState = {
   todos: [],
@@ -33,40 +6,54 @@ export const initialState = {
 };
 
 let CURRENT_ID = 1;
-export const initialTodoState = { completed: false };
 
-export function todoReducer(state = initialState, action) {
-  return produce(state, (state) => {
-    switch (action.type) {
-      case "todo/add":
+const todoSlice = createSlice({
+  name: "todo",
+  initialState,
+  reducers: {
+    addTodo: {
+      reducer(state, action) {
         state.todos.push({
-          ...initialTodoState,
           id: CURRENT_ID++,
           text: action.payload.text,
+          completed: false,
         });
-
-        break;
-
-      case "todo/toggle":
+        return state;
+      },
+      prepare(text) {
+        return { payload: { text } };
+      },
+    },
+    toggleTodo: {
+      reducer(state, action) {
         const todo = state.todos.find((todo) => todo.id === action.payload.id);
 
         if (todo) {
           todo.completed = !todo.completed;
         }
 
-        break;
-
-      case "todo/filter/set":
+        return state;
+      },
+      prepare(id) {
+        return { payload: { id } };
+      },
+    },
+    setFilter: {
+      reducer(state, action) {
         state.filter = action.payload.filter;
-        break;
 
-      default:
-        break;
-    }
+        return state;
+      },
+      prepare(filter) {
+        return { payload: { filter } };
+      },
+    },
+  },
+});
 
-    return state;
-  });
-}
+export const { addTodo, toggleTodo, setFilter } = todoSlice.actions;
+
+export const todoReducer = todoSlice.reducer;
 
 export function selectTodos(state) {
   return state.todo.todos;

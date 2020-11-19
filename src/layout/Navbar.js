@@ -5,6 +5,7 @@ import { selectTodos } from "../todo/todoSlice";
 
 function Navbar() {
   const todos = useSelector(selectTodos);
+  const result = useSelector((state) => state.pokemonList.result);
 
   return (
     <nav className="App-nav">
@@ -18,7 +19,7 @@ function Navbar() {
       <Route path="/pokemon">
         {(props) => (
           <Link to="/pokemon" aria-current={props.match ? "page" : undefined}>
-            Pokémon
+            Pokémon {result ? `(${result.count})` : null}
           </Link>
         )}
       </Route>

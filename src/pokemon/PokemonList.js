@@ -1,6 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import { Link, useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
+import { pokemonListSet } from "./pokemonListSlice";
 
 const BASE_URL = "https://pokeapi.co/api/v2";
 const LIMIT = 20;
@@ -21,6 +23,12 @@ function PokemonList() {
 
   const { url } = useRouteMatch();
   const [result, loading, error] = useFetch(makeUrl(page));
+
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(pokemonListSet(result, loading, error))
+  }, [dispatch, result, loading, error])
 
   if (error) {
     return <div>Error: {error.message}</div>;
