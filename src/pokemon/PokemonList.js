@@ -1,79 +1,62 @@
-import React, { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { Link, useHistory, useLocation, useRouteMatch } from "react-router-dom";
-import useFetch from "../hooks/useFetch";
-import { pokemonListSet } from "./pokemonListSlice";
-
-const BASE_URL = "https://pokeapi.co/api/v2";
-const LIMIT = 20;
-
-function makeUrl(page) {
-  const url = `${BASE_URL}/pokemon?offset=${(page - 1) * LIMIT}&limit=${LIMIT}`;
-
-  return url;
-}
+import React from "react";
+import { useHistory, useRouteMatch } from "react-router-dom";
+import PokemonItem from "./PokemonItem";
+import usePokemonList from "./usePokemonList";
 
 function PokemonList() {
-  const history = useHistory()
-  const location = useLocation()
-
-  const query = new URLSearchParams(location.search)
-  const pageFromQuery = query.get('page')
-  const page = pageFromQuery ? parseInt(pageFromQuery, 10) : 1;
-
+  const history = useHistory();
   const { url } = useRouteMatch();
-  const [result, loading, error] = useFetch(makeUrl(page));
-
-  const dispatch = useDispatch()
-
-  useEffect(() => {
-    dispatch(pokemonListSet(result, loading, error))
-  }, [dispatch, result, loading, error])
+  const {
+    pokemons,
+    page,
+    hasNext,
+    hasPrevious,
+    loading,
+    error,
+    onRefresh,
+  } = usePokemonList();
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <div>
+        Error: {error.message}
+        <button type="button" onClick={onRefresh}>
+          Retry
+        </button>
+      </div>
+    );
   }
 
   return (
     <>
-      {result ? (
+      {page ? (
         <p>
-          <button
-            type="button"
-            disabled={null === result.previous}
-            onClick={onPrevious}
-          >
+          <button type="button" disabled={!hasPrevious} onClick={onPrevious}>
             Précédent
           </button>
           Page: {page}
-          <button
-            type="button"
-            disabled={null === result.next}
-            onClick={onNext}
-          >
+          <button type="button" disabled={!hasNext} onClick={onNext}>
             Suivant
           </button>
         </p>
       ) : null}
-      {result ? <ul>{result.results.map(mapPokemon)}</ul> : null}
+      {pokemons ? (
+        <ul>
+          {pokemons.map((pokemon) => (
+            <PokemonItem key={pokemon.name} pokemon={pokemon} baseUrl={url} />
+          ))}
+        </ul>
+      ) : null}
       {loading ? <p>Loading...</p> : null}
     </>
   );
 
   function onPrevious() {
-    history.push(`${url}?page=${page - 1}`)
+    history.push(`${url}?page=${page - 1}`);
   }
 
   function onNext() {
-    history.push(`${url}?page=${page + 1}`)
-  }
-
-  function mapPokemon(pokemon) {
-    return (
-      <li key={pokemon.name}>
-        <Link to={`${url}/${pokemon.name}`}>{pokemon.name}</Link>
-      </li>
-    );
+    history.push(`${url}?page=${page + 1}`);
   }
 }
 
