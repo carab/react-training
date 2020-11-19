@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 function CounterWithEffect() {
   const [counter, setCounter] = useState(0);
-  const [page, setPage] = useState(1);
+  const [, setPage] = useState(1);
 
   useEffect(function timeoutEffect() {
     const timeout = setTimeout(() => {

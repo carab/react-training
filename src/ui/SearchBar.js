@@ -1,24 +1,24 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import useEscapeKey from "../hooks/useEscapeKey";
+import { SearchContext } from "../search/SearchFetcher";
 
 function SearchBar() {
-  const [result, setResult] = useState(null);
-
-  const onSearch = useCallback(async function onSearch(filters) {
-    const response = await fetch(`https://pokeapi.co/api/v2/pokemon?term=${filters.term}&showActive=${filters.active}`);
-    const result = await response.json();
-
-    setResult(result);
-  }, [])
-
+  const { onSearch } = useContext(SearchContext);
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const onEscapeKey = useCallback(() => {
-    setSearch('')
-  }, [])
+    setSearch("");
+  }, []);
 
-  useEscapeKey(onEscapeKey)
+  useEscapeKey(onEscapeKey);
 
   useEffect(
     function debounceEffect() {
