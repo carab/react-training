@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 
-function useFetch(url) {
-  const [result, setResult] = useState(undefined);
-  const [error, setError] = useState(null);
+function useFetch<R>(url: string, isResult?: (value: any) => value is R) {
+  const [result, setResult] = useState<R|undefined>(undefined);
+  const [error, setError] = useState<Error|null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(
@@ -17,9 +17,13 @@ function useFetch(url) {
         .then((response) => response.json())
         .then(
           (result) => {
-            setLoading(false);
-            setResult(result);
-            setError(null);
+            if (!isResult || isResult(result)) {
+              setLoading(false);
+              setResult(result);
+              setError(null);
+            } else {
+              throw new Error('Result is not of the expected type.')
+            }
           },
           (error) => {
             setLoading(false);
@@ -33,10 +37,10 @@ function useFetch(url) {
         controller.abort();
       };
     },
-    [url]
+    [url, isResult]
   );
 
-  return [result, loading, error];
+  return [result, loading, error] as const;
 }
 
 export default useFetch;
