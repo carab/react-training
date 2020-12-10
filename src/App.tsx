@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
-import PokemonList from './PokemonList/PokemonList';
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
+import PokemonIndex from './PokemonList/PokemonIndex';
 
 function App() {
   return (
@@ -19,7 +19,7 @@ function App() {
           </Route>
 
           <Route path="/pokemon">
-            <PokemonList/>
+            <PokemonIndex/>
           </Route>
 
           <Route>

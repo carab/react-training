@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
 
 export type PokemonApiList = {
@@ -49,7 +50,9 @@ function PokemonList() {
       {result ? (
         <ul>
           {result.results.map((pokemon) => (
-            <li key={pokemon.name}>{pokemon.name}</li>
+            <li key={pokemon.name}>
+              <Link to={`/pokemon/${pokemon.name}`}>{pokemon.name}</Link>
+            </li>
           ))}
         </ul>
       ) : null}
