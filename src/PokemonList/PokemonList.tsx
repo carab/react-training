@@ -1,6 +1,8 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
+import { pokemonListSet, selectPokemonList } from "./pokemonListSlice";
 
 export type PokemonApiList = {
   count: number;
@@ -18,9 +20,22 @@ function makeUrl(page: number) {
   return `https://pokeapi.co/api/v2/pokemon?offset=${(page - 1) * LIMIT}&limit=${LIMIT}`;
 }
 
+export function usePokemonList(page: number) {
+  const [result, error, loading] = useFetch<PokemonApiList>(makeUrl(page));
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(pokemonListSet(result, error, loading))
+  }, [dispatch, result, error, loading])
+
+  const pokemonList = useSelector(selectPokemonList)
+
+  return [pokemonList.result, pokemonList.error, pokemonList.loading] as const
+}
+
 function PokemonList() {
   const [page, setPage] = useState(1);
-  const [result, error, loading] = useFetch<PokemonApiList>(makeUrl(page));
+  const [result, error, loading] = usePokemonList(page)
 
   const onNavigate = (diff: number) => {
     setPage((page) => page + diff);
