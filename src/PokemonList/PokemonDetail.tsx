@@ -1,26 +1,43 @@
 import { useParams } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
+import * as yup from "yup";
 
-type PokemonApiDetail = {
-  name: string;
-  weight: number;
-  sprites: {
-    front_default: string;
-  };
-  types: Array<{
-    slot: string;
-    type: { name: string };
-  }>;
-};
+const pokemonApiDetailSchema = yup.object().shape({
+  name: yup.string().defined(),
+  weight: yup.number().defined(),
+  sprites: yup.object().shape({
+    front_default: yup.string().defined(),
+  }).defined(),
+  types: yup.array().of(
+    yup.object().shape({
+      slot: yup.number().defined(),
+      type: yup.object().shape({
+        name: yup.string().defined(),
+      }),
+    }).required()
+  ).required(),
+});
+
+type PokemonApiDetail = yup.TypeOf<typeof pokemonApiDetailSchema>
 
 export function isPokemonApiDetail(subject: any): subject is PokemonApiDetail {
-  return (
-    null !== subject &&
-    typeof subject === "object" &&
-    typeof subject.name === "string" &&
-    typeof subject.weight === "number" &&
-    Array.isArray(subject.types)
-  );
+  try {
+    pokemonApiDetailSchema.validateSync(subject)
+    
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function isSchemaOf<S extends yup.BaseSchema>(subject: any, schema: S): subject is yup.TypeOf<typeof schema> {
+  try {
+    schema.validateSync(subject)
+    
+    return true;
+  } catch (error) {
+    return false;
+  }
 }
 
 function makeUrl(name: string) {

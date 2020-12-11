@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 
 type FetchValidator<R> = (result: any) => result is R;
 
-export default function useFetch<R>(url: string, validator: FetchValidator<R>) {
+export default function useFetch<R>(url: string, validator?: FetchValidator<R>) {
   const [result, setResult] = useState<R | undefined>(undefined);
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(false);
@@ -21,7 +21,7 @@ export default function useFetch<R>(url: string, validator: FetchValidator<R>) {
           });
           const result = await response.json();
 
-          if (validator(result)) {
+          if (!validator || validator(result)) {
             setResult(result);
             setError(null);
           } else {
