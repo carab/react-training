@@ -13,13 +13,23 @@ type PokemonApiDetail = {
   }>;
 };
 
+export function isPokemonApiDetail(subject: any): subject is PokemonApiDetail {
+  return (
+    null !== subject &&
+    typeof subject === "object" &&
+    typeof subject.name === "string" &&
+    typeof subject.weight === "number" &&
+    Array.isArray(subject.types)
+  );
+}
+
 function makeUrl(name: string) {
   return `https://pokeapi.co/api/v2/pokemon/${name}`;
 }
 
 function PokemonDetail() {
   const { name } = useParams<{ name: string }>();
-  const [result, error, loading] = useFetch<PokemonApiDetail>(makeUrl(name));
+  const [result, error, loading] = useFetch(makeUrl(name), isPokemonApiDetail);
 
   if (error) {
     return <p>Error: {error.message}</p>;

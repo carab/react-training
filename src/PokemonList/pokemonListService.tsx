@@ -1,3 +1,5 @@
+import { PokemonApiList, isPokemonApiList } from "./pokemonListSlice";
+
 class PokemonListService {
   currentController: AbortController | undefined;
 
@@ -9,7 +11,7 @@ class PokemonListService {
     }&limit=${this.limit}`;
   }
 
-  async get(page: number) {
+  async get(page: number): Promise<PokemonApiList> {
     if (this.currentController) {
       this.currentController.abort();
     }
@@ -20,9 +22,13 @@ class PokemonListService {
       signal: this.currentController.signal,
     });
 
-    const result = await response.json();
+    const result: unknown = await response.json();
 
-    return result;
+    if (isPokemonApiList(result)) {
+        return result;
+    } else {
+        throw new Error('API result is not of the expected type.')
+    }
   }
 }
 

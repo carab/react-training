@@ -13,6 +13,10 @@ export type PokemonApiList = {
   }>;
 };
 
+export function isPokemonApiList(subject: any): subject is PokemonApiList {
+  return null !== subject && typeof subject === "object";
+}
+
 export type PokemonApiListItem = PokemonApiList["results"][number];
 
 export function pokemonListRequest(page: number) {
@@ -112,6 +116,7 @@ const reducers = {
       action: ReturnType<typeof pokemonListReceive>
     ) => {
       state.result = action.payload.result;
+      state.error = null;
       state.loading = false;
     }
   ),
