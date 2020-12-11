@@ -17,23 +17,56 @@ export function pokemonListSet(
   };
 }
 
+export function pokemonListCheck(name: string) {
+  return {
+    type: "pokemonList/check",
+    payload: {
+      name,
+    },
+  };
+}
+
 export type PokemonListState = {
   result: PokemonApiList | undefined;
   error: Error | null;
   loading: boolean;
+  checked: string[];
 };
 
 const initialState: PokemonListState = {
   result: undefined,
   error: null,
   loading: false,
+  checked: [],
 };
+
+function checkReducer(
+  state: PokemonListState = initialState,
+  action: ReturnType<typeof pokemonListCheck>
+) {
+  const checked = [...state.checked];
+  const index = checked.indexOf(action.payload.name);
+
+  if (index >= 0) {
+    checked.splice(index, 1);
+  } else {
+    checked.push(action.payload.name);
+  }
+
+  return {
+    ...state,
+    checked,
+  };
+}
 
 export default function pokemonListReducer(
   state: PokemonListState = initialState,
   action: AnyAction
 ): PokemonListState {
   switch (action.type) {
+    case "pokemonList/check": {
+      return checkReducer(state, action as any);
+    }
     case "pokemonList/set": {
       return {
         ...state,
@@ -47,6 +80,12 @@ export default function pokemonListReducer(
   }
 }
 
-export function selectPokemonList(state: AppStore) {
+export function selectPokemonList(state: AppStore): PokemonListState {
   return state.pokemonList;
+}
+
+export function selectPokemonListChecked(
+  state: AppStore
+): PokemonListState["checked"] {
+  return selectPokemonList(state).checked;
 }

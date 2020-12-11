@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import useFetch from "../hooks/useFetch";
-import { pokemonListSet, selectPokemonList } from "./pokemonListSlice";
+import {
+  pokemonListCheck,
+  pokemonListSet,
+  selectPokemonList,
+  selectPokemonListChecked,
+} from "./pokemonListSlice";
 
 export type PokemonApiList = {
   count: number;
@@ -13,6 +18,8 @@ export type PokemonApiList = {
     url: string;
   }>;
 };
+
+type PokemonApiListItem = PokemonApiList["results"][number];
 
 const LIMIT = 20;
 
@@ -35,16 +42,28 @@ export function usePokemonList(page: number) {
   return [pokemonList.result, pokemonList.error, pokemonList.loading] as const;
 }
 
-function PokemonList() {
-  const history = useHistory();
+export function useQueryPage() {
   const { search } = useLocation();
   const query = new URLSearchParams(search);
   const page = parseInt(query.get("page") ?? "1");
 
+  return page;
+}
+
+function PokemonList() {
+  const history = useHistory();
+  const page = useQueryPage();
+  const dispatch = useDispatch();
+
   const [result, error, loading] = usePokemonList(page);
+  const checked = useSelector(selectPokemonListChecked);
 
   const onNavigate = (diff: number) => {
     history.push(`?page=${page + diff}`);
+  };
+
+  const handleCheck = (pokemon: PokemonApiListItem) => {
+    dispatch(pokemonListCheck(pokemon.name));
   };
 
   if (error) {
@@ -72,6 +91,11 @@ function PokemonList() {
         <ul>
           {result.results.map((pokemon) => (
             <li key={pokemon.name}>
+              <input
+                type="checkbox"
+                checked={checked.includes(pokemon.name)}
+                onChange={() => handleCheck(pokemon)}
+              />
               <Link to={`/pokemon/${pokemon.name}`}>{pokemon.name}</Link>
             </li>
           ))}
