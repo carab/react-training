@@ -1,45 +1,24 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import useFetch from "../hooks/useFetch";
 import {
+  fetchPokemonList,
   pokemonListCheck,
-  pokemonListSet,
   selectPokemonList,
   selectPokemonListChecked,
+  PokemonApiListItem,
 } from "./pokemonListSlice";
 
-export type PokemonApiList = {
-  count: number;
-  next: string | null;
-  previous: string | null;
-  results: Array<{
-    name: string;
-    url: string;
-  }>;
-};
-
-type PokemonApiListItem = PokemonApiList["results"][number];
-
-const LIMIT = 20;
-
-function makeUrl(page: number) {
-  return `https://pokeapi.co/api/v2/pokemon?offset=${
-    (page - 1) * LIMIT
-  }&limit=${LIMIT}`;
-}
-
 export function usePokemonList(page: number) {
-  const [result, error, loading] = useFetch<PokemonApiList>(makeUrl(page));
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(pokemonListSet(result, error, loading));
-  }, [dispatch, result, error, loading]);
+    dispatch(fetchPokemonList(page));
+  }, [dispatch, page]);
 
-  const pokemonList = useSelector(selectPokemonList);
+  const { result, error, loading } = useSelector(selectPokemonList);
 
-  return [pokemonList.result, pokemonList.error, pokemonList.loading] as const;
+  return [result, error, loading] as const;
 }
 
 export function useQueryPage() {
