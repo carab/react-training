@@ -1,17 +1,33 @@
 import { AnyAction, configureStore } from "@reduxjs/toolkit";
-import pokemonListReducer, { PokemonListState } from "../PokemonList/pokemonListSlice";
+import { persistStore, persistReducer } from "redux-persist";
+import storage from "redux-persist/lib/storage";
+import pokemonListReducer, {
+  PokemonListState,
+} from "../PokemonList/pokemonListSlice";
 
 export type AppStore = {
   pokemonList: PokemonListState;
 };
 
-function appReducer(state: Partial<AppStore> = {}, action: AnyAction): AppStore {
+const persistConfig = {
+  key: "root",
+  storage,
+};
+
+function appReducer(
+  state: Partial<AppStore> = {},
+  action: AnyAction
+): AppStore {
   return {
     ...state,
     pokemonList: pokemonListReducer(state.pokemonList, action),
   };
 }
 
-const store = configureStore({ reducer: appReducer });
+const store = configureStore({
+  reducer: persistReducer(persistConfig, appReducer),
+});
 
-export default store;
+const persistor = persistStore(store);
+
+export { store as default, persistor };
